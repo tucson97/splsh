@@ -1,0 +1,129 @@
+/* Personalizador Cultr — estilos base (ajustar tokens al theme final) */
+
+#cultr-customizer {
+  --c-ink: #26211b;
+  --c-bg: #fbf3e2;
+  --c-accent: #e4572e;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px 0;
+  font-family: inherit;
+  color: var(--c-ink);
+}
+
+.cultr-c__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+#cultr-canvas {
+  width: min(64vw, 260px);
+  border-radius: 40px;
+  box-shadow: 0 20px 44px rgba(38, 33, 27, 0.25);
+  touch-action: none;
+  cursor: grab;
+  background: #f3e5c8;
+}
+
+.cultr-c__hint {
+  font-size: 12px;
+  opacity: 0.65;
+}
+
+.cultr-c__controls {
+  flex: 1 1 300px;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.cultr-c__label {
+  display: block;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.cultr-c__models {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cultr-c__model {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 2px solid var(--c-ink);
+  background: transparent;
+  color: var(--c-ink);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.cultr-c__model.is-active {
+  background: var(--c-ink);
+  color: var(--c-bg);
+}
+
+.cultr-c__model.is-soldout {
+  opacity: 0.35;
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+.cultr-c__upload {
+  display: block;
+  border: 2px dashed var(--c-ink);
+  border-radius: 999px;
+  padding: 14px;
+  text-align: center;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cultr-c__zoom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cultr-c__zoom input {
+  flex: 1;
+  accent-color: var(--c-accent);
+}
+
+.cultr-c__add {
+  background: var(--c-accent);
+  color: var(--c-bg);
+  border: 2px solid var(--c-ink);
+  border-radius: 999px;
+  padding: 15px 26px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--c-ink);
+}
+
+.cultr-c__add:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.cultr-c__status {
+  font-size: 13px;
+  font-weight: 600;
+  min-height: 18px;
+}
