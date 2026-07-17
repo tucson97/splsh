@@ -1,8 +1,6 @@
 // POST /api/upload
-// Recibe el archivo de impresión (PNG en base64, generado a resolución de
-// impresión por el personalizador) y lo guarda en Shopify Files vía staged
-// upload. Devuelve la URL, que el front adjunta como propiedad del line item
-// (_print_file) para que cada orden llegue con su archivo listo.
+// Recibe el archivo de impresión (PNG o JPEG en base64) y lo guarda en
+// Shopify Files vía staged upload. Devuelve la URL para _print_file.
 
 import { Router } from "express";
 import { adminGraphQL } from "../lib/shopify.js";
@@ -11,14 +9,15 @@ const router = Router();
 
 router.post("/", async (req, res) => {
   try {
-    const { dataUrl, filename = `cultr-${Date.now()}.png` } = req.body;
-    if (!dataUrl?.startsWith("data:image/png;base64,")) {
-      return res.status(400).json({ error: "dataUrl PNG base64 requerido" });
+    const { dataUrl, filename = `cultr-${Date.now()}.jpg` } = req.body;
+    const match = dataUrl?.match(/^data:image\/(png|jpeg);base64,/);
+    if (!match) {
+      return res.status(400).json({ error: "dataUrl PNG o JPEG base64 requerido" });
     }
+    const mime = `image/${match[1]}`;
 
     const buffer = Buffer.from(dataUrl.split(",")[1], "base64");
 
-    // 1. Staged upload target
     const staged = await adminGraphQL(
       `
       mutation staged($input: [StagedUploadInput!]!) {
@@ -33,7 +32,7 @@ router.post("/", async (req, res) => {
           {
             resource: "FILE",
             filename,
-            mimeType: "image/png",
+            mimeType: mime,
             httpMethod: "POST",
             fileSize: String(buffer.length),
           },
@@ -43,14 +42,12 @@ router.post("/", async (req, res) => {
 
     const target = staged.stagedUploadsCreate.stagedTargets[0];
 
-    // 2. Subir el binario al target
     const form = new FormData();
     for (const p of target.parameters) form.append(p.name, p.value);
-    form.append("file", new Blob([buffer], { type: "image/png" }), filename);
+    form.append("file", new Blob([buffer], { type: mime }), filename);
     const uploadRes = await fetch(target.url, { method: "POST", body: form });
     if (!uploadRes.ok) throw new Error(`Staged upload falló: ${uploadRes.status}`);
 
-    // 3. Registrar el archivo en Shopify Files
     const fileCreate = await adminGraphQL(
       `
       mutation fileCreate($files: [FileCreateInput!]!) {
@@ -66,7 +63,6 @@ router.post("/", async (req, res) => {
     const errs = fileCreate.fileCreate.userErrors;
     if (errs?.length) throw new Error(JSON.stringify(errs));
 
-    // resourceUrl es suficiente para producción interna (el archivo queda en Files)
     res.json({ url: target.resourceUrl });
   } catch (err) {
     console.error("[upload]", err);
