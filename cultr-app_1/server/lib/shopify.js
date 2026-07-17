@@ -1,10 +1,3 @@
-// Cliente del Admin API (GraphQL).
-// Desde 2026 las custom apps se crean en el Dev Dashboard y el token no se
-// muestra en la UI: se obtiene con client credentials grant usando el
-// Client ID + Secret. Este módulo lo pide y lo renueva solo.
-// Variables: SHOPIFY_STORE, SHOPIFY_CLIENT_ID, SHOPIFY_CLIENT_SECRET.
-// (Compatibilidad: si existe SHOPIFY_ADMIN_TOKEN de una app legacy, se usa ese.)
-
 const API_VERSION = "2025-07";
 
 let tokenCache = { token: null, expiresAt: 0 };
@@ -12,7 +5,6 @@ let tokenCache = { token: null, expiresAt: 0 };
 async function getAccessToken() {
   if (process.env.SHOPIFY_ADMIN_TOKEN) return process.env.SHOPIFY_ADMIN_TOKEN;
 
-  // renovar 60s antes de que venza
   if (tokenCache.token && Date.now() < tokenCache.expiresAt - 60_000) {
     return tokenCache.token;
   }
