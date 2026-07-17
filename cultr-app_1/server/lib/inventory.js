@@ -26,7 +26,7 @@ export async function getBlankStock() {
 
   const data = await adminGraphQL(`
     {
-      productVariants(first: 100, query: "sku:BLANK-*") {
+      productVariants(first: 100, query: "sku:BLANK*") {
         nodes {
           sku
           inventoryQuantity
